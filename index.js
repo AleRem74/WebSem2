@@ -1,21 +1,26 @@
-// 1. Импорт необходимых модулей
+// Импорт необходимых модулей
 const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const { sequelize, authenticateDB, checkFieldSynchronization } = require('./config/db');
-const { DataTypes, Model, Op } = require('sequelize'); // Добавляем DataTypes и Model из Sequelize
+const { DataTypes, Model, Op } = require('sequelize'); // Добавляем объекты из Sequelize
+const swaggerJsdoc = require('swagger-jsdoc');  //Стандарты документации
+const swaggerUi = require('swagger-ui-express');  //Визуализация
+const morgan = require('morgan');
+
 
 // Загрузка переменных окружения из файла .env
 dotenv.config();
 const port = process.env.PORT || 3000; // Порт из .env или 3000 по умолчанию
-// 2. Создание объекта приложения Express
+// Создание объекта приложения Express
 const app = express();
 
-// 2.2 Настройка middleware
+// Настройка middleware
 // Middleware для обработки JSON-запросов
 app.use(express.json());
 // Middleware для разрешения CORS
 app.use(cors());
+app.use(morgan('dev'));
 
 // Определение моделей Sequelize на основе структуры базы данных
 // Модель User
@@ -83,15 +88,34 @@ Event.init({
 // Определение ассоциации между моделями (внешний ключ)
 Event.belongsTo(User, { foreignKey: 'createdby', as: 'creator' }); // Событие принадлежит пользователю, поле внешнего ключа 'createdby'
 
+app.use(morgan('dev')); // Включаем логирование Morgan
 
-// 2.4 Тестовый маршрут GET /
+// Swagger configuration
+const swaggerOptions = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'API мероприятий',
+      version: '1.0.0',
+      description: 'Документация API для управления мероприятиями и пользователями',
+    },
+  },
+  apis: ['./index.js'], // Путь к файлу с API endpoints и Swagger аннотациями
+};
+
+const swaggerSpec = swaggerJsdoc(swaggerOptions);
+
+app.use('/api-docx', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+
+//Тестовый маршрут 
 app.get('/', (req, res) => {
     res.json({ message: 'Сервер работает!' });
 });
 
-// --- API для пользователей ---
+//API для пользователей 
 
-// 1. Создание нового пользователя (POST /users)
+//Создание нового пользователя (POST /users)
 app.post('/users', async (req, res) => {
     const { name, email } = req.body;
 
@@ -111,7 +135,39 @@ app.post('/users', async (req, res) => {
     }
 });
 
-// 2. Получение списка пользователей (GET /users)
+/**
+ * @swagger
+ * /users:
+ *   get:
+ *     summary: Получить список пользователей
+ *     description: Возвращает список всех пользователей.
+ *     tags: [Users]
+ *     responses:
+ *       200:
+ *         description: Успешный запрос. Возвращает массив пользователей.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: integer
+ *                     description: ID пользователя.
+ *                   name:
+ *                     type: string
+ *                     description: Имя пользователя.
+ *                   email:
+ *                     type: string
+ *                     description: Email пользователя.
+ *                   
+ *       500:
+ *         description: Ошибка сервера.
+ *         
+ */
+
+// Получение списка пользователей (GET /users)
 app.get('/users', async (req, res) => {
     try {
         const users = await User.findAll();
@@ -122,10 +178,59 @@ app.get('/users', async (req, res) => {
     }
 });
 
-
-// --- API для мероприятий ---
-
-// 1. Получение списка всех мероприятий (GET /events)
+/**
+ * @swagger
+ * /events:
+ *   get:
+ *     summary: Получить список мероприятий 
+ *     description: Возвращает список всех мероприятий 
+ *     tags: [Events]
+ *     responses:
+ *       200:
+ *         description: Успешный запрос. Возвращает массив мероприятий.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: integer
+ *                     description: ID мероприятия.
+ *                   title:
+ *                     type: string
+ *                     description: Название мероприятия.
+ *                   description:
+ *                     type: string
+ *                     description: Описание мероприятия.
+ *                   
+ *       404:
+ *         description: Мероприятия не найдены.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Мероприятия не найдены."
+ *       500:
+ *         description: Ошибка сервера.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Не удалось получить мероприятия."
+ *                 details:
+ *                   type: string
+ *                   example: "Ошибка"
+ */
+//API для мероприятий 
+//Получение списка всех мероприятий (GET /events)
 app.get('/events', async (req, res) => {
     try {
         const events = await Event.findAll({            include: [{
@@ -141,7 +246,7 @@ app.get('/events', async (req, res) => {
 }
 });
 
-// 2. Получение одного мероприятия по ID (GET /events/:id)
+//Получение одного мероприятия по ID (GET /events/:id)
 app.get('/events/search', async (req, res) => {
   const title = req.query.title; // Получаем параметр title
   const description = req.query.description; // Получаем параметр description
@@ -216,7 +321,7 @@ try {
 }
 });
 
-// 5. Удаление мероприятия (DELETE /events/:id)
+// Удаление мероприятия (DELETE /events/:id)
 app.delete('/events/:id', async (req, res) => {
 const eventId = req.params.id;
 try {
@@ -232,6 +337,7 @@ res.status(500).json({ error: 'Не удалось удалить меропри
 }
 });
 
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Проверка подключения к базе данных при запуске сервера
 async function startServer() {
