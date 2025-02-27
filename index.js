@@ -113,25 +113,102 @@ app.get('/', (req, res) => {
     res.json({ message: 'Сервер работает!' });
 });
 
-//API для пользователей 
+// Кастомные ошибки
+class ValidationError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = 'ValidationError';
+    }
+}
 
+class NotFoundError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = 'NotFoundError';
+    }
+}
+
+// Централизованный обработчик ошибок
+app.use((err, req, res, next) => {
+    console.error('Произошла ошибка:', err);
+
+    if (err instanceof ValidationError) {
+        return res.status(400).json({ error: err.message });
+    }
+
+    if (err instanceof NotFoundError) {
+        return res.status(404).json({ error: err.message });
+    }
+
+    res.status(500).json({ error: 'Произошла внутренняя ошибка сервера.', details: err.message });
+});
+
+//API для пользователей 
+/**
+ * @swagger
+ * /users:
+ *   post:
+ *     summary: Создание нового пользователя
+ *     description: Создает нового пользователя с указанными именем и email.
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: Имя пользователя.
+ *                 example: "Иван Иванов"
+ *               email:
+ *                 type: string
+ *                 description: Email пользователя.
+ *                 example: "ivan@example.com"
+ *     responses:
+ *       201:
+ *         description: Пользователь успешно создан.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: integer
+ *                   description: Уникальный идентификатор пользователя.
+ *                   example: 1
+ *                 name:
+ *                   type: string
+ *                   description: Имя пользователя.
+ *                   example: "Иван Иванов"
+ *                 email:
+ *                   type: string
+ *                   description: Email пользователя.
+ *                   example: "ivan@example.com"
+ *       400:
+ *         description: Ошибка валидации. Поля "name" и "email" обязательны для заполнения.
+ *       409:
+ *         description: Пользователь с таким email уже существует.
+ *       500:
+ *         description: Внутренняя ошибка сервера.
+ */
 //Создание нового пользователя (POST /users)
-app.post('/users', async (req, res) => {
+app.post('/users', async (req, res, next) => {
     const { name, email } = req.body;
 
     if (!name || !email) {
-        return res.status(400).json({ error: 'Поля "name" и "email" обязательны для заполнения.' });
+        return next(new ValidationError('Поля "name" и "email" обязательны для заполнения.'));
     }
 
     try {
         const newUser = await User.create({ name, email });
-        res.status(201).json(newUser); // 201 Created - успешно создан
+        res.status(201).json(newUser);
     } catch (error) {
         if (error.name === 'SequelizeUniqueConstraintError') {
-            return res.status(400).json({ error: 'Пользователь с таким email уже существует.' });
+            return next(new ValidationError('Пользователь с таким email уже существует.'));
         }
-        console.error('Ошибка при создании пользователя:', error);
-        res.status(500).json({ error: 'Не удалось создать пользователя.', details: error.message });
+        next(error);
     }
 });
 
@@ -168,13 +245,12 @@ app.post('/users', async (req, res) => {
  */
 
 // Получение списка пользователей (GET /users)
-app.get('/users', async (req, res) => {
+app.get('/users', async (req, res, next) => {
     try {
         const users = await User.findAll();
         res.status(200).json(users);
     } catch (error) {
-        console.error('Ошибка при получении списка пользователей:', error);
-        res.status(500).json({ error: 'Не удалось получить список пользователей.', details: error.message });
+        next(error);
     }
 });
 
@@ -231,22 +307,22 @@ app.get('/users', async (req, res) => {
  */
 //API для мероприятий 
 //Получение списка всех мероприятий (GET /events)
-app.get('/events', async (req, res) => {
+app.get('/events', async (req, res, next) => {
     try {
-        const events = await Event.findAll({            include: [{
-          model: User,
-          as: 'creator', // Используем алиас, который указали в ассоциации
-          attributes: ['id', 'name', 'email'] // Выбираем, какие поля пользователя включить
-      }]
-  });
-  res.status(200).json(events);
-} catch (error) {
-  console.error('Ошибка при получении списка мероприятий:', error);
-  res.status(500).json({ error: 'Не удалось получить список мероприятий.', details: error.message });
-}
+        const events = await Event.findAll({
+            include: [{
+                model: User,
+                as: 'creator',
+                attributes: ['id', 'name', 'email']
+            }]
+        });
+        res.status(200).json(events);
+    } catch (error) {
+        next(error);
+    }
 });
 
-//Получение одного мероприятия по ID (GET /events/:id)
+//Получение одного мероприятия по поиску
 app.get('/events/search', async (req, res) => {
   const title = req.query.title; // Получаем параметр title
   const description = req.query.description; // Получаем параметр description
@@ -268,7 +344,51 @@ app.get('/events/search', async (req, res) => {
 });
 
 
-// 3. Создание мероприятия (POST /events)
+// Создание мероприятия (POST /events)
+/**
+ * @swagger
+ * /events:
+ *   post:
+ *     summary: Создание нового мероприятия
+ *     tags:
+ *       - Events
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - title
+ *               - date
+ *               - createdby
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 description: Название мероприятия
+ *               description:
+ *                 type: string
+ *                 description: Описание мероприятия
+ *               date:
+ *                 type: string
+ *                 format: date-time
+ *                 description: Дата и время мероприятия
+ *               createdby:
+ *                 type: integer
+ *                 description: ID пользователя, создавшего мероприятие
+ *     responses:
+ *       201:
+ *         description: Мероприятие успешно создано
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Event'
+ *       400:
+ *         description: Ошибка валидации данных
+ *       500:
+ *         description: Ошибка сервера
+ */
+// Создание мероприятия (POST /events)
 app.post('/events', async (req, res) => {
 const { title, description, date, createdby } = req.body;
 
@@ -288,7 +408,59 @@ try {
 }
 });
 
-// 4. Обновление мероприятия (PUT /events/:id)
+/**
+ * @swagger
+ * /events/{id}:
+ *   put:
+ *     summary: Обновление информации о мероприятии
+ *     tags:
+ *       - Events
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID мероприятия для обновления
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - title
+ *               - date
+ *               - createdby
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 description: Название мероприятия
+ *               description:
+ *                 type: string
+ *                 description: Описание мероприятия
+ *               date:
+ *                 type: string
+ *                 format: date-time
+ *                 description: Дата и время мероприятия
+ *               createdby:
+ *                 type: integer
+ *                 description: ID пользователя, создавшего мероприятие
+ *     responses:
+ *       200:
+ *         description: Мероприятие успешно обновлено
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Event'
+ *       400:
+ *         description: Ошибка валидации данных или неверный ID пользователя (createdby)
+ *       404:
+ *         description: Мероприятие не найдено
+ *       500:
+ *         description: Ошибка сервера
+ */
+// Обновление мероприятия (PUT /events/:id)
 app.put('/events/:id', async (req, res) => {
 const eventId = req.params.id;
 const { title, description, date, createdby } = req.body;
@@ -321,20 +493,42 @@ try {
 }
 });
 
+/**
+ * @swagger
+ * /events/{id}:
+ *   delete:
+ *     summary: Удаление мероприятия по ID
+ *     tags:
+ *       - Events
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID мероприятия для удаления
+ *     responses:
+ *       200:
+ *         description: Мероприятие успешно удалено
+ *       404:
+ *         description: Мероприятие не найдено
+ *       500:
+ *         description: Ошибка сервера
+ */
 // Удаление мероприятия (DELETE /events/:id)
-app.delete('/events/:id', async (req, res) => {
-const eventId = req.params.id;
-try {
-  const event = await Event.findByPk(eventId);
-  if (!event) {            return res.status(404).json({ error: 'Мероприятие не найдено.' });
-}
+app.delete('/events/:id', async (req, res, next) => {
+    const eventId = req.params.id;
+    try {
+        const event = await Event.findByPk(eventId);
+        if (!event) {
+            return next(new NotFoundError('Мероприятие не найдено.'));
+        }
 
-await event.destroy();
-res.status(200).json({ message: 'Мероприятие успешно удалено.' });
-} catch (error) {
-console.error('Ошибка при удалении мероприятия:', error);
-res.status(500).json({ error: 'Не удалось удалить мероприятие.', details: error.message });
-}
+        await event.destroy();
+        res.status(200).json({ message: 'Мероприятие успешно удалено.' });
+    } catch (error) {
+        next(error);
+    }
 });
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
