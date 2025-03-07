@@ -28,6 +28,8 @@ async function authenticateDB() {
   }
 }
 
+sequelize.sync(); //todo использовать команду синхронизации, вместо функции checkFieldSynchronization
+
 // Функция для проверки синхронизации полей
 async function checkFieldSynchronization(tableName, expectedFields) {
   try {

@@ -22,6 +22,8 @@ app.use(express.json());
 app.use(cors());
 app.use(morgan('dev'));
 
+app.use(/* общий роутер */)
+
 // Определение моделей Sequelize на основе структуры базы данных
 // Модель User
 class User extends Model {}
