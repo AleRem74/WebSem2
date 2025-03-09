@@ -9,6 +9,7 @@ class EventController {
         if (!title || !date || !createdby) {
             return next(new ValidationError('Поля "title", "date" и "createdby" обязательны для заполнения.'));
         }
+        //Здесь этот блок необходим чтобы с помощью next передать ошибку в обработчик
         try {
             const newEvent = await EventService.create(title, description, date, createdby);
             res.status(201).json(newEvent);
@@ -24,6 +25,7 @@ class EventController {
         if (!title || !date || !createdby) {
             return next(new ValidationError ('Поля "title", "date" и "createdby" обязательны для обновления.' ));
         }
+        //И здесь тоже для передачи в обработчик
         try {
             const updatedEvent = await EventService.update(eventId, title, description, date, createdby);
             res.status(200).json(updatedEvent);
@@ -38,7 +40,7 @@ class EventController {
             await EventService.deleteEvent(eventId);
             res.status(200).json({ message: 'Мероприятие успешно удалено.' });
         } catch (error) {
-            next(error); // Передаем ошибку обработчику ошибок Express
+            next(error); 
         }
     }
 
@@ -62,7 +64,7 @@ class EventController {
         }
     }
 
-    // Другие методы, такие как update, delete и т.д.
+    
 }
 
 module.exports = new EventController();

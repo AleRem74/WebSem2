@@ -9,7 +9,7 @@ const swaggerOptions = {
             description: 'Документация API для управления мероприятиями и пользователями',
         },
     },
-    apis: ['./src/routes/*.js'],
+    apis: ['./src/routes/*.js'],    //тут располагается путь к комментариям Swagger
 };
 
 const swaggerSpec = swaggerJsdoc(swaggerOptions);

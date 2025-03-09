@@ -8,7 +8,7 @@ class UserController {
         if (!name || !email) {
             return next(new ValidationError('Поля "name" и "email" обязательны для заполнения.'));
         }
-    
+        //Здесь этот блок необходим чтобы с помощью next передать ошибку в обработчик
         try {
             const newUser = await UserService.create(name, email);
                 res.status(201).json(newUser);

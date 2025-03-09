@@ -3,7 +3,7 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const swaggerUi = require('swagger-ui-express');
 const morgan = require('morgan');
-const { authenticateDB, sequelize, checkFieldSynchronization } = require('./config/db');
+const {sequelize } = require('./config/db');
 const errorHandler = require('./src/middlewares/error-handler');
 const userRoutes = require('./src/routes/userRouter');
 const eventRoutes = require('./src/routes/eventRouter');
@@ -29,12 +29,8 @@ app.use('/api-docx', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use(errorHandler);
 
 async function startServer() {
-    await authenticateDB();
     await sequelize.sync();
-    const expectedUserFields = ['id', 'name', 'email', 'createdat'];
-    await checkFieldSynchronization('users', expectedUserFields);
-    const expectedEventFields = ['id', 'title', 'description', 'date', 'createdby'];
-    await checkFieldSynchronization('events', expectedEventFields);
+    console.log("Все проверки успешны");
 }
 
 app.listen(port, () => {

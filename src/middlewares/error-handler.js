@@ -1,6 +1,7 @@
 const { ValidationError, NotFoundError } = require('../utils/custom-errors');
 
 const errorHandler = (err, req, res, next) => {
+    //Здесь идет обработка пользовательских исключений чтобы были осмысленные сообщения
     console.error('Произошла ошибка:', err);
 
     if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {

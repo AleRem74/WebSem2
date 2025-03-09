@@ -67,7 +67,6 @@ class EventService {
         }
     }
 
-    // Другие методы, такие как update, delete и т.д.
 }
 
 module.exports = new EventService();

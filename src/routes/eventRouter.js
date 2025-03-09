@@ -82,17 +82,14 @@ router.get('/', eventController.getEvents);
  *             schema:
  *               type: array
  *               items:
- *                 type: object # Здесь нужно описать структуру объекта Event, если она известна, например:
- *                 # $ref: '#/components/schemas/Event'
- *                 example: # Пример ответа, можно убрать или заменить на реальный пример Event
+ *                 type: object 
+ *                 example: 
  *                   - id: 1
  *                     title: "Название мероприятия 1"
  *                     description: "Описание мероприятия 1"
- *                     # ... другие поля Event
  *                   - id: 2
  *                     title: "Название мероприятия 2"
  *                     description: "Описание мероприятия 2"
- *                     # ... другие поля Event
  *       500:
  *         description: Ошибка сервера. Не удалось получить мероприятия.
  *         content:

@@ -22,9 +22,9 @@ Event.init({
         allowNull: false,
     },
     createdby: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.INTEGER,    
         allowNull: false,
-        references: {
+        references: {   //Вот тут своебразный подзапрос, будут ещё дополнительно отображаться данные пользователя
             model: User,
             key: 'id',
         },
@@ -36,6 +36,6 @@ Event.init({
     timestamps: false,
 });
 
-Event.belongsTo(User, { foreignKey: 'createdby', as: 'creator' });
+Event.belongsTo(User, { foreignKey: 'createdby', as: 'creator' });  //Вот тут происходит организация связей с таблицами
 
 module.exports =  Event 

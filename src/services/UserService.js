@@ -3,6 +3,7 @@ const { ValidationError } = require('../utils/custom-errors');
 
 class UserService {
     async create(name, email) {
+        //этот блок обрабатывает ошибки с валидацией
         try {
             const newUser = await User.create({ name, email });
 
