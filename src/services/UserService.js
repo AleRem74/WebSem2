@@ -1,3 +1,6 @@
+const User = require('../models/User');
+const { ValidationError } = require('../utils/custom-errors');
+
 class UserService {
     async create(name, email) {
         try {
@@ -12,6 +15,11 @@ class UserService {
             throw error;
         }
     }
+
+
+    async getAll() {
+        return await User.findAll();
+    }
 }
 
-module.export = new UserService();
+module.exports = new UserService();
