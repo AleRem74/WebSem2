@@ -1,11 +1,13 @@
 const User = require('../models/User');
 const { ValidationError } = require('../utils/custom-errors');
+const bcryptjs = require('bcryptjs');
 
 class UserService {
-    async create(name, email) {
+    async create(name, email, password) {
+        const hashedPassword = await bcryptjs.hash(password, 10)
         //этот блок обрабатывает ошибки с валидацией
         try {
-            const newUser = await User.create({ name, email });
+            const newUser = await User.create({ name, email, password: hashedPassword});
 
             return newUser;
         } catch (error) {
@@ -17,9 +19,12 @@ class UserService {
         }
     }
 
-
     async getAll() {
-        return await User.findAll();
+        return await User.findAll({
+            attributes: {
+                exclude: ['password'],  //Исключить отображение пароля
+        },
+    });
     }
 }
 

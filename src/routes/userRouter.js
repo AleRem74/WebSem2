@@ -26,6 +26,10 @@ const userController = require('../controllers/UserController.js');
  *                 type: string
  *                 description: Email пользователя.
  *                 example: "ivan@example.com"
+ *               password:
+ *                 type: string
+ *                 description: Пароль пользователя
+ *                 example: "password"
  *     responses:
  *       201:
  *         description: Пользователь успешно создан.
@@ -81,6 +85,10 @@ router.post('/', userController.create);
  *                   email:
  *                     type: string
  *                     description: Email пользователя.
+ *                   password:
+ *                     type: string
+ *                     description: Пароль пользователя (скрыт для безопасности)
+ *                     example: "********"
  *                   
  *       500:
  *         description: Ошибка сервера.
