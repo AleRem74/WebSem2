@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 
 const userController = require('../controllers/UserController.js');
+const passport = require('passport');
 
   /**
  * @swagger
@@ -21,15 +22,15 @@ const userController = require('../controllers/UserController.js');
  *               name:
  *                 type: string
  *                 description: Имя пользователя.
- *                 example: "Иван Иванов"
+ *                 example: "Kot"
  *               email:
  *                 type: string
  *                 description: Email пользователя.
- *                 example: "ivan@example.com"
+ *                 example: "Kot@example.com"
  *               password:
  *                 type: string
  *                 description: Пароль пользователя
- *                 example: "password"
+ *                 example: "Cat"
  *     responses:
  *       201:
  *         description: Пользователь успешно создан.

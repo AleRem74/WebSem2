@@ -4,9 +4,11 @@ const cors = require('cors');
 const swaggerUi = require('swagger-ui-express');
 const morgan = require('morgan');
 const {sequelize } = require('./config/db');
+const passport = require('./config/passport');
 const errorHandler = require('./src/middlewares/error-handler');
 const userRoutes = require('./src/routes/userRouter');
 const eventRoutes = require('./src/routes/eventRouter');
+const authRoutes = require('./src/routes/auth');
 const swaggerSpec = require('./Swagger');
 
 dotenv.config();
@@ -17,6 +19,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 app.use(morgan('dev'));
+app.use(passport.initialize());
 
 app.get('/', (req, res) => {
     res.json({ message: 'Сервер работает!' });
@@ -24,6 +27,7 @@ app.get('/', (req, res) => {
 
 app.use('/users', userRoutes);
 app.use('/events', eventRoutes);
+app.use('/auth', authRoutes);
 app.use('/api-docx', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use(errorHandler);

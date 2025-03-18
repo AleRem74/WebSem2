@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const eventController = require('../controllers/EventController');
+const {verifyToken } = require('../../config/protectroutes');
+const passport = require('passport');
+
 
 /**
  * @swagger
@@ -113,6 +116,8 @@ router.get('/search', eventController.search);
  *     summary: Создание нового мероприятия
  *     tags:
  *       - Events
+ *     security:
+ *       - bearerAuth: []  # Применяем схему безопасности 'bearerAuth' к этому эндпоинту
  *     requestBody:
  *       required: true
  *       content:
@@ -146,10 +151,18 @@ router.get('/search', eventController.search);
  *               $ref: '#/components/schemas/Event'
  *       400:
  *         description: Ошибка валидации данных
+ *       401:
+ *         description: Ошибка авторизации (неверный/недействительный токен) # Добавили 401
  *       500:
  *         description: Ошибка сервера
+ * components:
+ *   securitySchemes:
+ *     bearerAuth:            # Имя схемы безопасности, которое мы использовали в 'security'
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
  */
-router.post('/', eventController.create);
+router.post('/',verifyToken ,eventController.create);
 
 /**
  * @swagger

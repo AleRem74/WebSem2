@@ -18,10 +18,7 @@ const sequelize = new Sequelize(dbName, dbUser, dbPassword, {
   dialect: 'postgres', // Указываем, что используем PostgreSQL
 });
 
-
-
 sequelize.sync(); //todo использовать команду синхронизации, вместо функции checkFieldSynchronization
-
 
 module.exports = {
   sequelize, // Экспортируем объект sequelize
