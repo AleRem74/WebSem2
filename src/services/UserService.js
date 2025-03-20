@@ -31,6 +31,29 @@ class UserService {
     async getAll() {
         return await User.findAll();
     }
+
+    async updateRole(userId, newRole) {
+        try {
+            const user = await User.findByPk(userId);
+            if (!user) {
+                throw new NotFoundError('Пользователь'); // Пользователь не найден
+            }
+
+            // *Дополнительная валидация роли (опционально)*
+            const validRoles = ['admin', 'user', 'NoName']; // Пример списка допустимых ролей
+            if (!validRoles.includes(newRole)) {
+                throw new ValidationError(`Недопустимая роль пользователя: "${newRole}". Допустимые роли: ${validRoles.join(', ')}.`);
+            }
+
+            await user.update({ role: newRole });
+            const updatedUser = await User.findByPk(userId, {
+                attributes: ['id', 'name', 'email', 'role'] // Возвращаем только нужные атрибуты
+            });
+            return updatedUser;
+        } catch (error) {
+            throw error; // Пробрасываем ошибки для обработки в контроллере
+        }
+    }
 }
 
 module.exports = new UserService();

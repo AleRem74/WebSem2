@@ -3,7 +3,8 @@ const express = require('express');
 const router = express.Router();
 
 const userController = require('../controllers/UserController.js');
-const passport = require('passport');
+const {verifyToken, verifyAdminToken } = require('../../protectroutes');
+
 
   /**
  * @swagger
@@ -95,6 +96,76 @@ router.post('/', userController.create);
  *         description: Ошибка сервера.
  *         
  */
-router.get('/', userController.getUsers);
+router.get('/',verifyAdminToken ,userController.getUsers);
+
+
+/**
+ * @swagger
+ * /users/{id}/role:
+ *   put:
+ *     summary: Обновить роль пользователя (только для администраторов)
+ *     description: >
+ *       Обновляет роль указанного пользователя.
+ *       Требуется аутентификация администратора.
+ *     tags: [Users] # Группа пользователей
+ *     security:
+ *       - bearerAuth: [] # Указываем, что требуется bearer token
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID пользователя, роль которого нужно обновить
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - role
+ *             properties:
+ *               role:
+ *                 type: string
+ *                 description: Новая роль пользователя (например, 'admin', 'user', 'editor')
+ *     responses:
+ *       200:
+ *         description: Успешное обновление роли пользователя
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties: # Опишите поля объекта пользователя, которые возвращаются
+ *                 id:
+ *                   type: integer
+ *                   description: ID пользователя
+ *                 name:
+ *                   type: string
+ *                   description: Имя пользователя
+ *                 email:
+ *                   type: string
+ *                   description: Email пользователя
+ *                 role:
+ *                   type: string
+ *                   description: Роль пользователя
+ *       400:
+ *         description: Ошибка валидации входных данных (например, отсутствует поле 'role')
+ *       401:
+ *         description: Отсутствует или недействительный токен авторизации
+ *       403:
+ *         description: Недостаточно прав (требуется роль администратора)
+ *       404:
+ *         description: Пользователь не найден
+ *       500:
+ *         description: Ошибка сервера
+ * components:
+ *   securitySchemes:
+ *     bearerAuth:            # Название схемы безопасности, используется в security секции маршрута
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ */
+router.put('/:id/role', verifyToken, verifyAdminToken, userController.updateRole);
 
 module.exports = router;

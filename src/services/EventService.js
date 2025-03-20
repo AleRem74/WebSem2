@@ -44,7 +44,7 @@ class EventService {
         const event = await Event.findByPk(eventId);
         if (!event) {
             throw new NotFoundError('Мероприятие'); // Бросаем ошибку, если не найдено
-        }
+        } 
 
         await event.destroy();
     }

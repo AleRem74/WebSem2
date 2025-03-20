@@ -88,7 +88,6 @@ async function findUserByEmail(email) {
 // Эндпоинт POST /auth/login
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
-  console.log('Входящий параметр пароля ' + password);
 
   if (!email || !password) {
     return res.status(400).json({ message: 'Необходимо предоставить email и пароль' });
@@ -104,17 +103,12 @@ router.post('/login', async (req, res) => {
    if (!user) {
        throw new Error('Пользователь не найден'); 
    }
-   else {
-    console.log('Пользователь ' + user.email)
-   }
 
    if (!user.password) {
     throw new Error('Хеш пароля отсутствует');
     }
 
-
    const isPasswordValid = await bcrypt.compare(password, user.password);
-   console.log('Хеш пароля ' + user.password)
 
   if (!isPasswordValid) {
     return res.status(401).json({ message: 'Неверные учетные данные' }); // Пароль неверный
@@ -124,7 +118,8 @@ router.post('/login', async (req, res) => {
   const payload = {
     userId: user.id,
     email: user.email,
-    username: user.name
+    username: user.name,
+    role: user.role
     // Можно добавить другие данные пользователя, которые вы хотите включить в токен
   };
  
@@ -136,5 +131,7 @@ router.post('/login', async (req, res) => {
 
   res.status(200).json({ token: token }); // Отправляем токен клиенту
 });
+
+
 
 module.exports = router;

@@ -22,7 +22,7 @@ class EventController {
         const eventId = req.params.id;
         const { title, description, date, createdby } = req.body;
 
-        if (!title || !date || !createdby) {
+        if (!description ) {
             return next(new ValidationError ('Поля "title", "date" и "createdby" обязательны для обновления.' ));
         }
         //И здесь тоже для передачи в обработчик

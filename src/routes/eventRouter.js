@@ -1,8 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const eventController = require('../controllers/EventController');
-const {verifyToken } = require('../../config/protectroutes');
-const passport = require('passport');
+const {verifyToken, verifyAdminToken, verifyEventOwnership } = require('../../protectroutes');
 
 
 /**
@@ -168,9 +167,11 @@ router.post('/',verifyToken ,eventController.create);
  * @swagger
  * /events/{id}:
  *   put:
- *     summary: Обновление информации о мероприятии
+ *     summary: Обновление мероприятия по ID (только для автора)
  *     tags:
  *       - Events
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -195,53 +196,49 @@ router.post('/',verifyToken ,eventController.create);
  *               description:
  *                 type: string
  *                 description: Описание мероприятия
- *               date:
- *                 type: string
- *                 format: date-time
- *                 description: Дата и время мероприятия
- *               createdby:
- *                 type: integer
- *                 description: ID пользователя, создавшего мероприятие
  *     responses:
  *       200:
  *         description: Мероприятие успешно обновлено
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Event'
  *       400:
- *         description: Ошибка валидации данных или неверный ID пользователя (createdby)
+ *         description: Ошибка валидации данных
+ *       401:
+ *         description: Ошибка авторизации (неверный/недействительный токен)
+ *       403:
+ *         description: Доступ запрещен (не автор события) # Добавили 403
  *       404:
  *         description: Мероприятие не найдено
  *       500:
  *         description: Ошибка сервера
  */
-// Обновление мероприятия (PUT /events/:id)
-router.put('/:id', eventController.update);
+router.put('/:id', verifyToken, verifyEventOwnership, eventController.update);
 
 /**
- * @swagger
- * /events/{id}:
- *   delete:
- *     summary: Удаление мероприятия по ID
- *     tags:
- *       - Events
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: ID мероприятия для удаления
- *     responses:
- *       200:
- *         description: Мероприятие успешно удалено
- *       404:
- *         description: Мероприятие не найдено
- *       500:
- *         description: Ошибка сервера
- */
+* @swagger
+* /events/{id}:
+*   delete:
+*     summary: Удаление мероприятия по ID
+*     tags:
+*       - Events
+*     security:
+*       - bearerAuth: []  # Применяем схему безопасности 'bearerAuth' к этому эндпоинту! Добавлено!
+*     parameters:
+*       - in: path
+*         name: id
+*         required: true
+*         schema:
+*           type: integer
+*         description: ID мероприятия для удаления
+*     responses:
+*       200:
+*         description: Мероприятие успешно удалено
+*       404:
+*         description: Мероприятие не найдено
+*       401:
+*         description: Ошибка авторизации (неверный/недействительный токен) # Рекомендуется добавить 401, если требуется авторизация
+*       500:
+*         description: Ошибка сервера
+*/
 // Удаление мероприятия (DELETE /events/:id)
-router.delete('/:id', eventController.deleteEvent);
+router.delete('/:id', verifyAdminToken,eventController.deleteEvent);
 
 module.exports = router;

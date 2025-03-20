@@ -16,11 +16,15 @@ User.init({
         type: DataTypes.STRING,
         allowNull: false,
         unique: true,
-    },
+    }, 
     password: {
         type: DataTypes.STRING,
         allowNull: false,
     },
+    role: {
+        type: DataTypes.ENUM('user', 'admin', 'NoName'),
+        defaultValue: 'user', // Роль по умолчанию 'user'
+      },
     createdat: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW,

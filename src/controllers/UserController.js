@@ -26,6 +26,22 @@ class UserController {
             next(error);
         }
     }
+
+    async updateRole(req, res, next) {
+        const userId = req.params.id;
+        const { role } = req.body; // Получаем новую роль из тела запроса
+
+        if (!role) {
+            return next(new ValidationError('Поле "role" обязательно для обновления роли пользователя.'));
+        }
+
+        try {
+            const updatedUser = await UserService.updateRole(userId, role);
+            res.status(200).json(updatedUser); // Успешное обновление
+        } catch (error) {
+            next(error); // Передаем ошибку дальше для обработки глобальным обработчиком ошибок
+        }
+    }
 }
 
 module.exports = new UserController();

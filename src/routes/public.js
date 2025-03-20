@@ -55,3 +55,5 @@ const eventController = require('../controllers/EventController');
  *                   example: "Ошибка"
  */
 router.get('/', eventController.getEvents);
+
+module.exports = router;
