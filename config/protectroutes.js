@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const Event = require('./src/models/Event');
+const Event = require('../src/models/Event');
 
 const verifyToken = (req, res, next) => {
   const authHeader = req.headers.authorization;

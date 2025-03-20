@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const eventController = require('../controllers/EventController');
-const {verifyToken, verifyAdminToken, verifyEventOwnership } = require('../../protectroutes');
+const {verifyToken, verifyAdminToken, verifyEventOwnership } = require('../../config/protectroutes');
 
 
 /**
