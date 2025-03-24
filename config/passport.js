@@ -1,49 +1,70 @@
-const passport = require('passport');
-const JwtStrategy = require('passport-jwt').Strategy;
-const ExtractJwt = require('passport-jwt').ExtractJwt;
-const dotenv = require('dotenv');
-const User = require('../src/models/User');
-const jwt = require('jsonwebtoken');
-const { Sequelize } = require('sequelize');
+const passport = require('passport');  
+const { Strategy: JwtStrategy, ExtractJwt } = require('passport-jwt');  
+const Event = require('../src/models/Event');  
+const User = require('../src/models/User'); 
 
-dotenv.config();
+// Настройка стратегии Passport для работы с JWT  
+const opts = {  
+  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),  
+  secretOrKey: process.env.JWT_SECRET, 
+};  
 
-// Секретный ключ для подписи и верификации JWT.
-const JWT_SECRET = process.env.JWT_SECRET;
+// Настройка стратегии  
+passport.use(new JwtStrategy(opts, async (jwt_payload, done) => {  
+  try {   
+    //  модель User:  
+    const user = await User.findByPk(jwt_payload.userId);  
+    if (user) {  
+      return done(null, user);  
+    } else {  
+      return done(null, false); // Пользователь не найден  
+    }  
+  } catch (error) {  
+    return done(error, false);  
+  }  
+}));  
 
-const logTokenMiddleware = (req, res, next) => {
-  const token = ExtractJwt.fromAuthHeaderAsBearerToken()(req); // Извлекаем токен здесь
-  console.log('Сырой JWT токен из заголовка:', token); // Выводим токен в консоль
-  next(); // Передаем управление следующему middleware (Passport)
-};
+// Middleware для верификации токена   
+const verifyToken = passport.authenticate('jwt', { session: false });  
 
-const jwtOptions = {
-    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(), // Получаем токен из заголовка Authorization как Bearer token
-    secretOrKey: JWT_SECRET,                                 // Секретный ключ для верификации
-  };
-  
-  const jwtStrategy = new JwtStrategy(jwtOptions, async (jwtPayload, done) => {
-    try {
-      // jwtPayload содержит декодированный payload из JWT
-      const userId = jwtPayload.id; // ID пользователя хранится в поле 'id' payload
-      console.log('Айди в JWT токене ' + jwtPayload.id);
-  
-      // Проверяем, существует ли пользователь с таким ID в базе данных
-      const user = await User.findByPk(userId);
-      console.log('Айди пользователя ' + userId);
-  
-      if (user) {
-        // Пользователь найден, передаем его в обработчик запроса
-        return done(null, user); // req.user = user
-      } else {
-        // Пользователь не найден
-        return done(null, false); // Аутентификация не удалась
-      }
-    } catch (error) {
-      return done(error, false); // Ошибка при поиске пользователя в БД
-    }
-  });
+// Middleware для проверки ролей пользователей  
+const verifyAdminToken = (req, res, next) => {  
+  console.log('значение req.user ' + req.user);
+  console.log('req.user.role равно ' + req.user.role);
+  if (req.user && req.user.role === 'admin') {  
+    return next(); // Админ авторизован  
+  }  
+  return res.status(403).json({ message: 'Доступ к маршруту админа запрещен' });  
+};  
 
-  passport.use(jwtStrategy);
-  module.exports = passport;
+// Middleware для проверки авторства события  
+const verifyEventOwnership = async (req, res, next) => {  
+  try {  
+    const userIdFromToken = req.user.userId;  
+    const eventId = req.params.id;  
 
+    const event = await Event.findByPk(eventId);  
+    if (!event) {  
+      return res.status(404).json({ message: 'Событие не найдено' });  
+    }  
+
+    if (event.createdby !== userIdFromToken) {  
+      return res.status(403).json({ message: 'Вы не являетесь автором этого события и не можете его редактировать' });  
+    }  
+
+    if (req.user.role === 'NoName') {  
+      return res.status(403).json({ message: 'Ты ноунейми и ты не можешь редактировать события' });  
+    }  
+
+    next(); // Если все проверки пройдены, продолжаем  
+  } catch (error) {  
+    return res.status(500).json({ message: 'Ошибка сервера при проверке авторства события' });  
+  }  
+};  
+
+module.exports = {  
+  verifyToken,  
+  verifyAdminToken,  
+  verifyEventOwnership,  
+  passport,
+};  

@@ -3,7 +3,8 @@ const express = require('express');
 const router = express.Router();
 
 const userController = require('../controllers/UserController.js');
-const {verifyToken, verifyAdminToken } = require('../../config/protectroutes.js');
+//const {verifyToken, verifyAdminToken } = require('../../config/protectroutes');
+const {verifyToken, verifyAdminToken } = require('../../config/passport');
 
 
   /**

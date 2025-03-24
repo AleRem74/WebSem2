@@ -73,11 +73,11 @@ const verifyAdminToken = (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET); // Используем JWT_SECRET!
+    const decoded = jwt.verify(token, process.env.JWT_SECRET); 
 
     // Проверяем, есть ли роль и является ли она 'admin'
     if (decoded && decoded.role === 'admin') {
-      req.user = decoded; // Можно сохранить данные пользователя в req.user
+      req.user = decoded; 
       
       next(); // Админ авторизован
     } else {
