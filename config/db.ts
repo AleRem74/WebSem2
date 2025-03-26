@@ -1,18 +1,18 @@
-// db.js
-const { Sequelize } = require('sequelize');
-const dotenv = require('dotenv');
+// db.ts
+import { Sequelize } from 'sequelize';
+import dotenv from 'dotenv';
 
 dotenv.config();
 
 // Извлекаем переменные окружения для подключения к БД
-const dbName = process.env.DB_NAME;
-const dbUser = process.env.DB_USER;
-const dbPassword = process.env.DB_PASSWORD;
-const dbHost = process.env.DB_HOST;
-const dbPort = process.env.DB_PORT;
+const dbName: string = process.env.DB_NAME as string;
+const dbUser: string = process.env.DB_USER as string;
+const dbPassword: string = process.env.DB_PASSWORD as string;
+const dbHost: string = process.env.DB_HOST as string;
+const dbPort: number = parseInt(process.env.DB_PORT as string, 10);
 
 // Создаем объект Sequelize
-const sequelize = new Sequelize(dbName, dbUser, dbPassword, {
+export const sequelize = new Sequelize(dbName, dbUser, dbPassword, {
   host: dbHost,
   port: dbPort,
   dialect: 'postgres', // Указываем, что используем PostgreSQL

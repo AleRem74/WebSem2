@@ -1,9 +1,10 @@
-// controllers/EventController.js
-const EventService = require('../services/EventService');
-const { ValidationError } = require('../utils/custom-errors');
+// controllers/EventController.ts
+import { Request, Response, NextFunction } from 'express';
+import EventService from '../services/EventService';
+import { ValidationError } from '../utils/custom-errors';
 
 class EventController {
-    async create(req, res, next) {
+    async create(req: Request, res: Response, next: NextFunction): Promise<void> {
         const { title, description, date, createdby } = req.body;
 
         if (!title || !date || !createdby) {
@@ -18,12 +19,12 @@ class EventController {
         }
     }
 
-    async update(req, res, next) {
-        const eventId = req.params.id;
+    async update(req: Request, res: Response, next: NextFunction): Promise<void> {
+        const eventId = parseInt(req.params.id);
         const { title, description, date, createdby } = req.body;
 
-        if (!description ) {
-            return next(new ValidationError ('Поля "title", "date" и "createdby" обязательны для обновления.' ));
+        if (!description) {
+            return next(new ValidationError('Поля "title", "date" и "createdby" обязательны для обновления.'));
         }
         //И здесь тоже для передачи в обработчик
         try {
@@ -34,8 +35,8 @@ class EventController {
         }
     }
 
-    async deleteEvent(req, res, next) {
-        const eventId = req.params.id;
+    async deleteEvent(req: Request, res: Response, next: NextFunction): Promise<void> {
+        const eventId = parseInt(req.params.id);
         try {
             await EventService.deleteEvent(eventId);
             res.status(200).json({ message: 'Мероприятие успешно удалено.' });
@@ -44,7 +45,7 @@ class EventController {
         }
     }
 
-    async getEvents(req, res, next) {
+    async getEvents(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const events = await EventService.getAll();
             res.status(200).json(events);
@@ -53,8 +54,8 @@ class EventController {
         }
     }
 
-    async search(req, res, next) {
-        const { title, description } = req.query;
+    async search(req: Request, res: Response, next: NextFunction): Promise<void> {
+        const { title, description } = req.query as { title?: string, description?: string };
 
         try {
             const events = await EventService.searchEvents(title, description);
@@ -63,8 +64,6 @@ class EventController {
             next(error);
         }
     }
-
-    
 }
 
-module.exports = new EventController();
+export default new EventController();

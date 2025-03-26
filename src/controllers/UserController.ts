@@ -1,24 +1,24 @@
-const UserService = require('../services/UserService');
-const { ValidationError } = require('../utils/custom-errors');
+import { Request, Response, NextFunction } from 'express';
+import UserService from '../services/UserService';
+import { ValidationError } from '../utils/custom-errors';
 
 class UserController {
-    async create(req, res, next) {
+    async create(req: Request, res: Response, next: NextFunction): Promise<void> {
         const { name, email, password } = req.body;
     
         if (!name || !email || !password) {
             return next(new ValidationError('Поля "name" и "email" и "password" обязательны для заполнения.'));
         }
-        //Здесь этот блок необходим чтобы с помощью next передать ошибку в обработчик
+        
         try {
             const newUser = await UserService.create(name, email, password);
-                res.status(201).json(newUser);
+            res.status(201).json(newUser);
         } catch (error) {
-                next(error); // Передаем ошибку в middleware
+            next(error); // Передаем ошибку в middleware
         }
-        
     }
 
-    async getUsers(req, res, next) {
+    async getUsers(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const users = await UserService.getAll();
             res.status(200).json(users);
@@ -27,8 +27,8 @@ class UserController {
         }
     }
 
-    async updateRole(req, res, next) {
-        const userId = req.params.id;
+    async updateRole(req: Request, res: Response, next: NextFunction): Promise<void> {
+        const userId = parseInt(req.params.id);
         const { role } = req.body; // Получаем новую роль из тела запроса
 
         if (!role) {
@@ -44,4 +44,4 @@ class UserController {
     }
 }
 
-module.exports = new UserController();
+export default new UserController();

@@ -1,15 +1,15 @@
-const express = require('express');
-const dotenv = require('dotenv');
-const cors = require('cors');
-const swaggerUi = require('swagger-ui-express');
-const morgan = require('morgan');
-const {sequelize } = require('./config/db');
-const {passport} = require('./config/passport');
-const errorHandler = require('./src/middlewares/error-handler');
-const userRoutes = require('./src/routes/userRouter');
-const eventRoutes = require('./src/routes/eventRouter');
-const authRoutes = require('./src/routes/auth');
-const swaggerSpec = require('./Swagger');
+import express, {RequestHandler } from 'express';
+import dotenv from 'dotenv';
+import cors from 'cors';
+import swaggerUi from 'swagger-ui-express';
+import morgan from 'morgan';
+import { sequelize } from './config/db';
+import { passport } from './config/passport';
+import errorHandler from './src/middlewares/error-handler';
+import userRoutes from './src/routes/userRouter';
+import eventRoutes from './src/routes/eventRouter';
+import authRoutes from './src/routes/auth';
+import swaggerSpec from './Swagger';
 
 dotenv.config();
 const port = process.env.PORT || 3000;
@@ -18,7 +18,7 @@ const app = express();
 
 app.use(express.json());
 app.use(cors());
-app.use(morgan('dev'));
+app.use(morgan('dev') as RequestHandler);
 app.use(passport.initialize());
 
 app.get('/', (req, res) => {
@@ -29,6 +29,8 @@ app.use('/users', userRoutes);
 app.use('/events', eventRoutes);
 app.use('/auth', authRoutes);
 app.use('/api-docx', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+
 
 app.use(errorHandler);
 

@@ -1,6 +1,6 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const eventController = require('../controllers/EventController');
+import eventController from '../controllers/EventController';
 
 
 /**
@@ -56,4 +56,4 @@ const eventController = require('../controllers/EventController');
  */
 router.get('/', eventController.getEvents);
 
-module.exports = router;
+export default router;

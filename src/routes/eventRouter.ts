@@ -1,9 +1,15 @@
-const express = require('express');
+import express from 'express';
+import { Response, NextFunction, RequestHandler } from 'express';
 const router = express.Router();
-const eventController = require('../controllers/EventController');
-//const {verifyToken, verifyAdminToken, verifyEventOwnership } = require('../../config/protectroutes');
-const {verifyToken, verifyAdminToken, verifyEventOwnership } = require('../../config/passport');
+import eventController from '../controllers/EventController';
+import { verifyToken, verifyAdminToken, verifyEventOwnership, RequestWithUser } from '../../config/passport';
 
+
+  const wrapUserMiddleware = (
+    middleware: (req: RequestWithUser, res: Response, next: NextFunction) => void
+  ): RequestHandler => {
+    return (req, res, next) => middleware(req as RequestWithUser, res, next);
+  };
 
 /**
  * @swagger
@@ -211,7 +217,7 @@ router.post('/',verifyToken ,eventController.create);
  *       500:
  *         description: Ошибка сервера
  */
-router.put('/:id', verifyToken, verifyEventOwnership, eventController.update);
+router.put('/:id', verifyToken, wrapUserMiddleware(verifyEventOwnership), eventController.update);
 
 /**
 * @swagger
@@ -240,6 +246,6 @@ router.put('/:id', verifyToken, verifyEventOwnership, eventController.update);
 *         description: Ошибка сервера
 */
 // Удаление мероприятия (DELETE /events/:id)
-router.delete('/:id', verifyAdminToken,eventController.deleteEvent);
+router.delete('/:id', verifyToken,wrapUserMiddleware(verifyAdminToken), eventController.deleteEvent);
 
-module.exports = router;
+export default router;

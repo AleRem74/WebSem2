@@ -1,13 +1,12 @@
 //todo импорт роутера
 
-module.export = router;
 // routes/index.js
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const userRoutes = require('./userRouter');
-const eventRoutes = require('./eventRouter');
-const publicRoutes = require('./public')
-const authRoutes = require('./auth')
+import userRoutes from './userRouter';
+import eventRoutes from './eventRouter';
+import publicRoutes from './public';
+import authRoutes from './auth';
 
 // Используем маршруты пользователей
 router.use('/users', userRoutes);
@@ -17,4 +16,4 @@ router.use('/events', eventRoutes);
 router.use('/events', publicRoutes)
 
 
-module.exports = router;
+export default router;

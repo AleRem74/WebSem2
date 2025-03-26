@@ -1,13 +1,20 @@
 //todo импорт роутера
-const express = require('express');
+import express from 'express';
+import { Response, NextFunction, RequestHandler } from 'express';
 const router = express.Router();
 
-const userController = require('../controllers/UserController.js');
-//const {verifyToken, verifyAdminToken } = require('../../config/protectroutes');
-const {verifyToken, verifyAdminToken } = require('../../config/passport');
+import userController from '../controllers/UserController';
+import { verifyToken, verifyAdminToken, RequestWithUser } from '../../config/passport';
 
 
-  /**
+const wrapUserMiddleware = (
+  middleware: (req: RequestWithUser, res: Response, next: NextFunction) => void
+): RequestHandler => {
+  return (req, res, next) => middleware(req as RequestWithUser, res, next);
+};
+
+
+/**
  * @swagger
  * /users:
  *   post:
@@ -69,6 +76,8 @@ router.post('/', userController.create);
  *     summary: Получить список пользователей
  *     description: Возвращает список всех пользователей.
  *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Успешный запрос. Возвращает массив пользователей.
@@ -92,13 +101,22 @@ router.post('/', userController.create);
  *                     type: string
  *                     description: Пароль пользователя (скрыт для безопасности)
  *                     example: "********"
- *                   
+ *       401:
+ *         description: Неавторизованный доступ.
+ *       403:
+ *         description: Доступ запрещен (например, недостаточно прав).
  *       500:
  *         description: Ошибка сервера.
- *         
+ * 
+ * components:
+ *   securitySchemes:
+ *     bearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
  */
-router.get('/',verifyAdminToken ,userController.getUsers);
-
+//router.get('/' ,userController.getUsers);
+router.get('/', verifyToken,wrapUserMiddleware(verifyAdminToken) ,userController.getUsers);
 
 /**
  * @swagger
@@ -167,6 +185,6 @@ router.get('/',verifyAdminToken ,userController.getUsers);
  *       scheme: bearer
  *       bearerFormat: JWT
  */
-router.put('/:id/role', verifyToken, verifyAdminToken, userController.updateRole);
+router.put('/:id/role', verifyToken, wrapUserMiddleware(verifyAdminToken), userController.updateRole);
 
-module.exports = router;
+export default router;

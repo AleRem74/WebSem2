@@ -1,27 +1,27 @@
-const express = require('express');
+import express, { Request, Response } from 'express';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import User from '../models/User';
+import dotenv from 'dotenv';
+
+dotenv.config(); // Вызов функции для загрузки переменных окружения
+
 const router = express.Router();
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const User = require('../models/User');
-const dotenv = require('dotenv');
 
-dotenv.config();
-
-async function findUserByEmail(email) {
-    try {
-      const users = await User.findAll({
-        where: {
-          email: email // Фильтруем пользователей, где email соответствует предоставленному
-        }
-      });
-      // findAll всегда возвращает массив, даже если ожидается один результат.
-      return users[0]; // Вернем первого пользователя или undefined, если никого не найдено
-    } catch (error) {
-      console.error("Ошибка при поиске пользователя по email:", error);
-      return null; 
-    }
+// Функция для поиска пользователя по email
+async function findUserByEmail(email: string): Promise<User | null> {
+  try {
+    const users = await User.findAll({
+      where: {
+        email: email, // Фильтруем пользователей по email
+      },
+    });
+    return users[0] || null; // Вернем первого пользователя или null, если никого не найдено
+  } catch (error) {
+    console.error("Ошибка при поиске пользователя по email:", error);
+    return null; 
   }
-
+}
 
 
 /**
@@ -86,29 +86,24 @@ async function findUserByEmail(email) {
  *                   example: Неверные учетные данные
  */
 // Эндпоинт POST /auth/login
-router.post('/login', async (req, res) => {
+router.post('/login', (async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
     return res.status(400).json({ message: 'Необходимо предоставить email и пароль' });
   }
 
-   user = findUserByEmail(email);
+  const user = await findUserByEmail(email);
 
   if (!user) {
     return res.status(401).json({ message: 'Неверные учетные данные' }); // Пользователь не найден
   }
 
-   user = await User.findOne({ where: { email } });
-   if (!user) {
-       throw new Error('Пользователь не найден'); 
-   }
-
-   if (!user.password) {
+  if (!user.password) {
     throw new Error('Хеш пароля отсутствует');
-    }
+  }
 
-   const isPasswordValid = await bcrypt.compare(password, user.password);
+  const isPasswordValid = await bcrypt.compare(password, user.password);
 
   if (!isPasswordValid) {
     return res.status(401).json({ message: 'Неверные учетные данные' }); // Пароль неверный
@@ -119,19 +114,17 @@ router.post('/login', async (req, res) => {
     userId: user.id,
     email: user.email,
     username: user.name,
-    role: user.role
-    // Можно добавить другие данные пользователя, которые вы хотите включить в токен
+    role: user.role,
   };
  
   const secretKey = process.env.JWT_SECRET; 
 
-  const token = jwt.sign(payload, secretKey, {
-    expiresIn: '1h' // Токен истекает через 1 час 
+  const token = jwt.sign(payload, secretKey as string, {
+    expiresIn: '1h', // Токен истекает через 1 час 
   });
 
-  res.status(200).json({ token: token }); // Отправляем токен клиенту
-});
+  res.status(200).json({ token }); // Отправляем токен клиенту
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+}) as any);
 
-
-
-module.exports = router;
+export default router; // Экспортируем маршрутизатор
