@@ -3,12 +3,12 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import swaggerUi from 'swagger-ui-express';
 import morgan from 'morgan';
-import { sequelize } from './config/db';
-import { passport } from './config/passport';
-import errorHandler from './src/middlewares/error-handler';
-import userRoutes from './src/routes/userRouter';
-import eventRoutes from './src/routes/eventRouter';
-import authRoutes from './src/routes/auth';
+import { sequelize } from '@config/db';
+import { passport } from '@config/passport';
+import errorHandler from '@middlewares/error-handler';
+import userRoutes from '@routes/userRouter';
+import eventRoutes from '@routes/eventRouter';
+import authRoutes from '@routes/auth';
 import swaggerSpec from './Swagger';
 
 dotenv.config();

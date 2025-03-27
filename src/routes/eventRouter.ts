@@ -1,8 +1,8 @@
 import express from 'express';
 import { Response, NextFunction, RequestHandler } from 'express';
 const router = express.Router();
-import eventController from '../controllers/EventController';
-import { verifyToken, verifyAdminToken, verifyEventOwnership, RequestWithUser } from '../../config/passport';
+import eventController from '@controllers/EventController';
+import { verifyToken, verifyAdminToken, verifyEventOwnership, RequestWithUser } from '@config/passport';
 
 
   const wrapUserMiddleware = (

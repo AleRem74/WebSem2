@@ -1,5 +1,5 @@
-import User from '../models/User';
-import { ValidationError, NotFoundError } from '../utils/custom-errors';
+import User from '@models/User';
+import { ValidationError, NotFoundError } from '@utils/custom-errors';
 import bcryptjs from 'bcryptjs';
 
 class UserService {

@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import UserService from '../services/UserService';
-import { ValidationError } from '../utils/custom-errors';
+import UserService from '@services/UserService';
+import { ValidationError } from '@utils/custom-errors';
 
 class UserController {
     async create(req: Request, res: Response, next: NextFunction): Promise<void> {

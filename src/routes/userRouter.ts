@@ -3,8 +3,8 @@ import express from 'express';
 import { Response, NextFunction, RequestHandler } from 'express';
 const router = express.Router();
 
-import userController from '../controllers/UserController';
-import { verifyToken, verifyAdminToken, RequestWithUser } from '../../config/passport';
+import userController from '@controllers/UserController';
+import { verifyToken, verifyAdminToken, RequestWithUser } from '@config/passport';
 
 
 const wrapUserMiddleware = (

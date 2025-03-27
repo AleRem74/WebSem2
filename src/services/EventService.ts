@@ -1,6 +1,6 @@
-import Event from '../models/Event';
-import User from '../models/User';
-import { ValidationError, NotFoundError } from '../utils/custom-errors';
+import Event from '@models/Event';
+import User from '@models/User';
+import { ValidationError, NotFoundError } from '@utils/custom-errors';
 import { Op } from 'sequelize';
 
 class EventService {

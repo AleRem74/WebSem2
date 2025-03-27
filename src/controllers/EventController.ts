@@ -1,7 +1,7 @@
 // controllers/EventController.ts
 import { Request, Response, NextFunction } from 'express';
-import EventService from '../services/EventService';
-import { ValidationError } from '../utils/custom-errors';
+import EventService from '@services/EventService';
+import { ValidationError } from '@utils/custom-errors';
 
 class EventController {
     async create(req: Request, res: Response, next: NextFunction): Promise<void> {

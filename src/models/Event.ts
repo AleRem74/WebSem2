@@ -1,7 +1,7 @@
 // Инициализация модели Event и его связи
 import { DataTypes, Model } from 'sequelize';
 import User from './User';
-import { sequelize } from '../../config/db';
+import { sequelize } from '@config/db';
 
 class Event extends Model {
   public id!: number; 

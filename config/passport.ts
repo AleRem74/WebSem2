@@ -1,8 +1,8 @@
 import passport from 'passport';
 import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
-import Event from '../src/models/Event';
-import User from '../src/models/User';
-import  UserAttributes from '../src/models/User';
+import Event from '@models/Event';
+import User from '@models/User';
+import  UserAttributes from '@models/User';
 
 import { Request, Response, NextFunction } from 'express';
 
