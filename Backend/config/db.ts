@@ -1,5 +1,5 @@
 // db.ts
-import { Sequelize } from 'sequelize';
+import {Sequelize}  from 'sequelize';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -12,6 +12,7 @@ const dbHost: string = process.env.DB_HOST as string;
 const dbPort: number = parseInt(process.env.DB_PORT as string, 10);
 
 // Создаем объект Sequelize
+
 export const sequelize = new Sequelize(dbName, dbUser, dbPassword, {
   host: dbHost,
   port: dbPort,
