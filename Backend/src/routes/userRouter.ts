@@ -18,7 +18,7 @@ const wrapUserMiddleware = (
  * @swagger
  * /users:
  *   post:
- *     summary: Создание нового пользователя
+ *     summary: Регистрация нового пользователя
  *     description: Создает нового пользователя с указанными именем и email.
  *     tags: [Users]
  *     requestBody:

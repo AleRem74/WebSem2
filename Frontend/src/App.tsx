@@ -1,35 +1,52 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import React, { useEffect, useState } from 'react';
+import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import Header from './Pages/Header';
+import HomePage from './Pages/HomePage';
+import AuthPage from './Pages/AuthPage';
+import RegPage from './Pages/RegPage';
+import EventsPage from './Pages/EventsPage';
+import NotFoundPage from './Pages/NotFoundPage';
 
 function App() {
-  const [count, setCount] = useState(0)
+
+  useEffect(() => {
+    const testBackendConnection = async () => {
+      try {
+        const response = await fetch('http://localhost:3000'); 
+
+        if (response.ok) {
+          console.log('✅ Подключение к бэкенду успешно установлено!');
+        } else {
+          console.error('❌ Ошибка подключения к бэкенду. Статус:', response.status);
+          
+        }
+      } catch (error) {
+        console.error('❌ Ошибка при попытке подключения к бэкенду:', error);
+      }
+    };
+
+    testBackendConnection();
+  }, []); // Пустой массив зависимостей означает, что useEffect выполнится только один раз при монтировании компонента
+
+  // Пример состояния авторизации (для макета)
+  const [isAuthenticated, setIsAuthenticated] = useState(false); // Изначально не авторизован
 
   return (
-    <>
+    <Router>
       <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+        <Header isAuthenticated={isAuthenticated} />
+
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/auth" element={<AuthPage />} />
+          <Route path="/reg" element={<RegPage />} />
+          <Route path="/events" element={<EventsPage />} />
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    </Router>
+  );
 }
 
-export default App
+export default App;
