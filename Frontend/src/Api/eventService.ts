@@ -16,3 +16,21 @@ export const fetchEvents = async (): Promise<any> => {
     }
   }
 };
+
+// Функция для поиска мероприятий
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const searchEvents = async (query: string): Promise<any> => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/events/search`, {
+        params: { description: query }, // Передаем поисковый запрос как параметр
+      });
+      return response.data; // Возвращаем результаты поиска
+    } catch (error) {
+      console.error('Ошибка при поиске мероприятий:', error);
+      if (axios.isAxiosError(error)) {
+        throw new Error(`Ошибка HTTP: ${error.response?.status}`);
+      } else {
+        throw new Error('Неизвестная ошибка');
+      }
+    }
+  };

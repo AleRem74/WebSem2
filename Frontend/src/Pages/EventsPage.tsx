@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { fetchEvents } from '../Api/eventService'; // Импортируем функцию для получения данных
+import { fetchEvents, searchEvents } from '../Api/eventService'; // Импортируем функции
 
 interface Event {
   id: string;
@@ -13,24 +13,48 @@ function EventsPage() {
   const [eventsData, setEventsData] = useState<Event[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  const [searchQuery, setSearchQuery] = useState(''); // Состояние для поискового запроса
 
+  // Функция для загрузки всех мероприятий
+  const loadAllEvents = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await fetchEvents();
+      setEventsData(data);
+    } catch (error) {
+      setError(error instanceof Error ? error : new Error('Неизвестная ошибка'));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Функция для выполнения поиска
+  const handleSearch = async () => {
+    if (!searchQuery.trim()) {
+      // Если поле поиска пустое, загружаем все мероприятия
+      loadAllEvents();
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await searchEvents(searchQuery); // Выполняем поиск
+      setEventsData(data); // Обновляем состояние с результатами поиска
+    } catch (error) {
+      setError(error instanceof Error ? error : new Error('Неизвестная ошибка'));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  
+
+  // Загрузка всех мероприятий при первом рендере компонента
   useEffect(() => {
-    const loadEvents = async () => {
-      setLoading(true);
-      setError(null);
-
-      try {
-        const data = await fetchEvents(); // Вызываем функцию для получения данных
-        setEventsData(data);
-      } catch (error) {
-        setError(error instanceof Error ? error : new Error("Неизвестная ошибка"));
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadEvents();
-  }, []); // Пустой массив зависимостей
+    loadAllEvents();
+  }, []);
 
   if (loading) {
     return <p>Загрузка мероприятий...</p>;
@@ -47,6 +71,38 @@ function EventsPage() {
   return (
     <div style={{ padding: '20px' }}>
       <h1 style={{ marginBottom: '20px' }}>Список мероприятий</h1>
+
+      
+      <div style={{ marginBottom: '20px' }}>
+        <input
+          type="text"
+          placeholder="Введите описание мероприятия"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)} // Обновляем состояние при вводе текста
+          style={{
+            padding: '10px',
+            fontSize: '16px',
+            width: '300px',
+            marginRight: '10px',
+          }}
+        />
+        <button
+          onClick={handleSearch} // Вызываем функцию поиска при нажатии на кнопку
+          style={{
+            padding: '10px 20px',
+            fontSize: '16px',
+            backgroundColor: '#007bff',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '4px',
+            cursor: 'pointer',
+          }}
+        >
+          Поиск
+        </button>
+      </div>
+
+      {}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
         {eventsData.map((event) => (
           <div
@@ -60,7 +116,7 @@ function EventsPage() {
             }}
           >
             <h2 style={{ margin: '0 0 10px' }}>{event.title}</h2>
-            <p style={{ margin: '0 0 10px', color: '#555' }}>{event.description}</p>
+            <p  style={{ margin: '0 0 10px', color: '#555' }}> Описание: {event.description}</p>
             <p style={{ margin: '0', fontSize: '14px', color: '#888' }}>
               Дата проведения: {new Date(event.date).toLocaleDateString()}
             </p>
