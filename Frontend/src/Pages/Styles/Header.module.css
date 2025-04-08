@@ -1,0 +1,62 @@
+/* Header.module.css */
+
+body {
+  background-color: black; /* Черный фон для всей страницы */
+  margin: 0; /* Убрать отступы по умолчанию */
+  color: white; /* Белый цвет текста для контента по умолчанию */
+}
+
+.header {
+  background-color: black; 
+  padding: 10px 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.nav {
+  display: flex;
+  justify-content: space-between; /* Разделяет левую и правую части */
+  align-items: center;
+  flex-wrap: wrap; /* Позволяет переносить элементы на новую строку при необходимости */
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.leftNav,
+.rightNav {
+  display: flex;
+  gap: 20px; /* Расстояние между кнопками */
+}
+
+.leftNav {
+  justify-content: flex-start; /* Выровнять по левому краю */
+}
+
+.rightNav {
+  justify-content: flex-end; /* Выровнять по правому краю */
+}
+
+.navItem {
+  list-style: none;
+}
+
+.navLink {
+  text-decoration: none;
+  color: #007bff;
+  font-size: 16px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.navLink:hover {
+  background-color: #e9ecef;
+}
+
+.leftNavLink {
+  text-align: left; /* Дополнительно для левых ссылок */
+}
+
+.rightNavLink {
+  text-align: right; /* Дополнительно для правых ссылок */
+}

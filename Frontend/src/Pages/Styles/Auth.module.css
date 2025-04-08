@@ -1,0 +1,61 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh; /* Занять всю высоту экрана */
+    background-color: #121212; /* Темный фон страницы */
+}
+
+.loginBox {
+    background-color: #1e1e1e; /* Темное чуть более светлое окно */
+    border: 2px solid #6a0dad; /* Фиолетовая рамка */
+    border-radius: 8px;
+    padding: 20px;
+    width: 300px; /* Ширина окна */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Тень для окна */
+}
+
+h1, h2 {
+    color: white; /* Белый цвет заголовка */
+}
+
+.errorMessage, .successMessage {
+    margin-bottom: 10px;
+}
+
+.errorMessage {
+    color: red; /* Красный цвет ошибки */
+}
+
+.successMessage {
+    color: green; /* Зеленый цвет успешного сообщения */
+}
+
+.label {
+    color: white; /* Белый цвет для меток */
+}
+
+.inputField {
+    width: 100%;
+    padding: 8px;
+    margin: 10px 0; /* Отступы для полей ввода */
+    border: 1px solid #333; /* Темно-серая рамка */
+    border-radius: 4px;
+    background-color: #444; /* Серый фон для полей ввода */
+    color: white; /* Белый цвет текста в полях */
+}
+
+button {
+    padding: 10px 15px;
+    background-color: #6a0dad; /* Цвет кнопки */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #5a0c93; /* Более темный цвет кнопки при наведении */
+}

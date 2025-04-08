@@ -1,12 +1,10 @@
 import React from 'react';
-
+import styles from './Styles/HomePage.module.css'; // Импортируем CSS-модуль
 
 const HomePage: React.FC = () => {
   return (
-    <div style={{ padding: '20px' }}>
-      <h1>Главная страница</h1>
-      <p>Добро пожаловать на главную страницу нашего сайта!</p>
-      {/* Здесь потом уже разместим контент главной страницы */}
+    <div className={styles.container}>
+      <h1 className={styles.welcomeText}>Добро пожаловать на главную страницу нашего сайта!</h1>
     </div>
   );
 };

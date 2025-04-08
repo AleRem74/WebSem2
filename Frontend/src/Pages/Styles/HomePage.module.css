@@ -1,0 +1,17 @@
+/* HomePage.module.css */
+
+.container {
+    padding: 20px;
+    text-align: center; /* Центрирование текста */
+    background-color: #141414; 
+    height: 100vh; /* Высота экрана */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Центрирование по вертикали */
+  }
+  
+  .welcomeText {
+    font-weight: bold; /* Жирный шрифт */
+    font-size: 2rem; /* Увеличенный размер текста */
+  }
+  

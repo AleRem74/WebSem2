@@ -1,86 +1,109 @@
 // src/components/LoginPage.tsx (или src/pages/LoginPage.tsx, в зависимости от структуры)
 
 import React, { useEffect, useState } from 'react';
-import { login } from '../Api/authService'; // Импортируем функцию login
-import { useNavigate } from 'react-router-dom'; 
-import { getToken } from '../utils/localStorageUtils';
+import { login } from '../Api/authService';
+import { useNavigate } from 'react-router-dom';
+import { getToken, saveToken } from '../utils/localStorageUtils'; // Импортируем setToken
+import styles from './Styles/Auth.module.css';
 
 const LoginPage: React.FC = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState(''); // Состояние для хранения ошибки
-  const navigate = useNavigate(); // Хук для навигации
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
+  const [isAuthenticated, setIsAuthenticated] = useState(false); // Добавляем состояние isAuthenticated
 
   useEffect(() => {
-    const token = getToken; // Проверяем наличие токена в localStorage
-    if (token()) {
-        // Если токен есть, значит пользователь уже авторизован
-        navigate('/events'); // Перенаправляем на страницу мероприятий
+    const token = getToken(); // Получаем токен из localStorage
+    if (token) {
+      setIsAuthenticated(true); // Устанавливаем isAuthenticated в true, если токен есть
+      navigate('/events');
+    } else {
+      setIsAuthenticated(false); // Устанавливаем isAuthenticated в false, если токена нет
     }
-    // Если токена нет, ничего не делаем, пользователь остается на странице авторизации
-}, [navigate]);
+  }, [navigate]);
 
   const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault(); // Предотвращаем перезагрузку страницы при отправке формы
-    setError(''); // Сбрасываем ошибку при новой попытке логина
+    event.preventDefault();
+    setError('');
 
     try {
-      const token = await login({ name, email, password }); // Вызываем функцию login из authService
+      const token = await login({ name, email, password });
       if (token) {
-        // Успешный логин, перенаправляем пользователя на страницу мероприятий
+        saveToken(token); // Сохраняем токен в localStorage после успешного логина
+        setIsAuthenticated(true); // Обновляем состояние isAuthenticated после успешного логина
         console.log('Успешный логин, токен:', token);
-        navigate('/events'); // Перенаправляем на мероприятия
+        navigate('/events');
+        window.location.reload();
       } else {
-        // login вернул null, значит произошла ошибка 
         setError('Произошла ошибка при логине. Пожалуйста, попробуйте еще раз.');
       }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (loginError: any) { // Ловим ошибку, выброшенную из login
+    } catch (loginError: any) {
       console.error('Ошибка логина:', loginError);
-      setError('Неверные имя пользователя или пароль'); 
+      setError('Неверные имя пользователя или пароль');
     }
   };
 
+  // Пример условного рендера, зависящего от isAuthenticated.
+  // В реальном приложении это будет влиять на отображение "других полей" в других компонентах.
+  if (isAuthenticated) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.loginBox}>
+          <h2>Вы успешно авторизованы!</h2>
+          <p>Перенаправляем на страницу мероприятий...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div>
-      <h2>Страница входа</h2>
-      {error && <div style={{ color: 'red' }}>{error}</div>} {}
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="name">Имя:</label>
-          <input
-            type="text"
-            id="name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label htmlFor="email">Email:</label>
-          <input
-            type="email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label htmlFor="password">Пароль:</label>
-          <input
-            type="password"
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        <button type="submit">Войти</button>
-      </form>
+    <div className={styles.container}>
+      <div className={styles.loginBox}>
+        <h2>Страница входа</h2>
+        {error && <div className={styles.errorMessage}>{error}</div>}
+        <form onSubmit={handleSubmit}>
+          <div>
+            <label htmlFor="name" className={styles.label}>Имя:</label>
+            <input
+              type="text"
+              id="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              className={styles.inputField}
+            />
+          </div>
+          <div>
+            <label htmlFor="email" className={styles.label}>Email:</label>
+            <input
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className={styles.inputField}
+            />
+          </div>
+          <div>
+            <label htmlFor="password" className={styles.label}>Пароль:</label>
+            <input
+              type="password"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className={styles.inputField}
+            />
+          </div>
+          <button type="submit">Войти</button>
+        </form>
+      </div>
     </div>
   );
 };
 
 export default LoginPage;
+
