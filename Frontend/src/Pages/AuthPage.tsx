@@ -7,7 +7,7 @@ import { getToken, saveToken } from '../utils/localStorageUtils'; // Импор�
 import styles from './Styles/Auth.module.css';
 
 const LoginPage: React.FC = () => {
-  const [name, setName] = useState('');
+  const [name] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -46,8 +46,6 @@ const LoginPage: React.FC = () => {
     }
   };
 
-  // Пример условного рендера, зависящего от isAuthenticated.
-  // В реальном приложении это будет влиять на отображение "других полей" в других компонентах.
   if (isAuthenticated) {
     return (
       <div className={styles.container}>
@@ -65,17 +63,7 @@ const LoginPage: React.FC = () => {
         <h2>Страница входа</h2>
         {error && <div className={styles.errorMessage}>{error}</div>}
         <form onSubmit={handleSubmit}>
-          <div>
-            <label htmlFor="name" className={styles.label}>Имя:</label>
-            <input
-              type="text"
-              id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-              className={styles.inputField}
-            />
-          </div>
+          
           <div>
             <label htmlFor="email" className={styles.label}>Email:</label>
             <input
