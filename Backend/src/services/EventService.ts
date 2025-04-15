@@ -57,6 +57,7 @@ class EventService {
         return await Event.findAll();
     }
 
+
     async searchEvents(title?: string, description?: string) {
         // eslint-disable-next-line no-useless-catch
         try {

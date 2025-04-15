@@ -30,6 +30,7 @@ class UserService {
         return await User.findAll();
     }
 
+
     async updateRole(userId: number, newRole: 'user' | 'admin' | 'NoName'): Promise<User | null> {
         // eslint-disable-next-line no-useless-catch
         try {

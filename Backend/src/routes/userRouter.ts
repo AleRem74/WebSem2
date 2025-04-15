@@ -118,6 +118,8 @@ router.post('/', userController.create);
 //router.get('/' ,userController.getUsers);
 router.get('/', verifyToken,wrapUserMiddleware(verifyAdminToken) ,userController.getUsers);
 
+router.get('/:id', userController.getUser);
+
 /**
  * @swagger
  * /users/{id}/role:

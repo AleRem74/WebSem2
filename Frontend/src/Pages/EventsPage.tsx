@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { fetchEvents, searchEvents } from '../Api/eventService'; // Импортируем функции
 import styles from './Styles/Events.module.css'
 
-
 interface Event {
   id: string;
   title: string;
