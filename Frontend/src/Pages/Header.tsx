@@ -36,6 +36,7 @@ const Header: React.FC<HeaderProps> = () => {
   const handleLogout = () => {
     clearToken(); // Удаляем токен
     setToken(null); // Обновляем состояние токена
+    window.location.reload();
   };
 
   return (
@@ -77,6 +78,11 @@ const Header: React.FC<HeaderProps> = () => {
                   <span className={styles.navLink}>
                     Вы авторизованы как {userName}
                   </span>
+                </li>
+                <li className={styles.navItem}>
+                  <Link to="/profile" className={styles.navLink}>
+                    Профиль
+                  </Link>
                 </li>
                 <li className={styles.navItem}>
                   <button onClick={handleLogout} className={styles.navLink}>

@@ -1,49 +1,27 @@
-// src/components/LoginPage.tsx (или src/pages/LoginPage.tsx, в зависимости от структуры)
-
-import React, { useEffect, useState } from 'react';
-import { login } from '../Api/authService';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getToken, saveToken } from '../utils/localStorageUtils'; // Импортируем setToken
+import { useAppDispatch, useAppSelector } from '../app/hooks'; // хуки с типизацией
+import { login, setEmail, setPassword } from '../app/authSlice';
 import styles from './Styles/Auth.module.css';
 
 const LoginPage: React.FC = () => {
-  const [name] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  //const [email, setEmail] = useState('');
+  //const [password, setPassword] = useState('');
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const [isAuthenticated, setIsAuthenticated] = useState(false); // Добавляем состояние isAuthenticated
+
+  const { email, password, isAuthenticated, loading, error } = useAppSelector(state => state.auth);
 
   useEffect(() => {
-    const token = getToken(); // Получаем токен из localStorage
-    if (token) {
-      setIsAuthenticated(true); // Устанавливаем isAuthenticated в true, если токен есть
+    if (isAuthenticated) {
       navigate('/events');
-    } else {
-      setIsAuthenticated(false); // Устанавливаем isAuthenticated в false, если токена нет
+      window.location.reload();
     }
-  }, [navigate]);
+  }, [isAuthenticated, navigate]);
 
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
-    setError('');
-
-    try {
-      const token = await login({ name, email, password });
-      if (token) {
-        saveToken(token); // Сохраняем токен в localStorage после успешного логина
-        setIsAuthenticated(true); // Обновляем состояние isAuthenticated после успешного логина
-        console.log('Успешный логин, токен:', token);
-        navigate('/events');
-        window.location.reload();
-      } else {
-        setError('Произошла ошибка при логине. Пожалуйста, попробуйте еще раз.');
-      }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (loginError: any) {
-      console.error('Ошибка логина:', loginError);
-      setError('Неверные имя пользователя или пароль');
-    }
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    dispatch(login({ email, password }));
   };
 
   if (isAuthenticated) {
@@ -63,16 +41,16 @@ const LoginPage: React.FC = () => {
         <h2>Страница входа</h2>
         {error && <div className={styles.errorMessage}>{error}</div>}
         <form onSubmit={handleSubmit}>
-          
           <div>
-            <label htmlFor="email" className={styles.label}>Email:</label>
+          <label htmlFor="email" className={styles.label}>Email:</label>
             <input
               type="email"
               id="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => dispatch(setEmail(e.target.value))}
               required
               className={styles.inputField}
+              disabled={loading}
             />
           </div>
           <div>
@@ -81,12 +59,13 @@ const LoginPage: React.FC = () => {
               type="password"
               id="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => dispatch(setPassword(e.target.value))}
               required
               className={styles.inputField}
+              disabled={loading}
             />
           </div>
-          <button type="submit">Войти</button>
+          <button type="submit" disabled={loading}>{loading ? 'Вход...' : 'Войти'}</button>
         </form>
       </div>
     </div>
@@ -94,4 +73,3 @@ const LoginPage: React.FC = () => {
 };
 
 export default LoginPage;
-

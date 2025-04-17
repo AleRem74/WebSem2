@@ -7,6 +7,7 @@ import AuthPage from './Pages/AuthPage';
 import RegPage from './Pages/RegPage';
 import EventsPage from './Pages/EventsPage';
 import NotFoundPage from './Pages/NotFoundPage';
+import ProfilePage from './Pages/ProfilePage';
 
 function App() {
 
@@ -42,6 +43,7 @@ function App() {
           <Route path="/auth" element={<AuthPage />} />
           <Route path="/reg" element={<RegPage />} />
           <Route path="/events" element={<EventsPage />} />
+          <Route path="/profile" element={<ProfilePage/>}/>
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </div>

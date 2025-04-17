@@ -120,7 +120,7 @@ router.post('/login', (async (req: Request, res: Response) => {
   const secretKey = process.env.JWT_SECRET; 
 
   const token = jwt.sign(payload, secretKey as string, {
-    expiresIn: '1h', // Токен истекает через 1 час 
+    expiresIn: '24h', // Токен истекает через 24 часа 
   });
 
   res.status(200).json({ token }); // Отправляем токен клиенту

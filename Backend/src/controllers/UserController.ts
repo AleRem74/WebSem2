@@ -32,6 +32,7 @@ class UserController {
     async getUser(req: Request, res: Response, next: NextFunction) : Promise<void> {
         try {
             const userId = Number(req.params.id);
+            
             if (isNaN(userId)) {
                 res.status(400).json({ error: 'Некорректный id пользователя' });
                 return;
@@ -41,7 +42,7 @@ class UserController {
               });
           
               if (!user) {
-                res.status(404).json({ error: 'Пользователь не найден' });
+                res.status(404).json({ error: 'Пользователь не найден' + userId });
                 return;
               }
           

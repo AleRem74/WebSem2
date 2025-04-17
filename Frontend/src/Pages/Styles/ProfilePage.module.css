@@ -1,0 +1,203 @@
+/* Фон всей страницы */
+.page {
+    background-color: #181818; /* Чёрный фон */
+    min-height: 100vh;
+    padding: 20px;
+    color: white;
+    font-family: Arial, sans-serif;
+  }
+  
+  /* Контейнер профиля пользователя */
+  .profileContainer {
+    background-color: #1a1a1a; /* чуть светлее чёрного */
+    border: 2px solid #800080; /* фиолетовая рамка */
+    padding: 20px;
+    max-width: 400px;
+    margin-bottom: 30px;
+  }
+  
+  /* Обёртка с данными пользователя — отдельная рамка */
+  .userInfo {
+    border: 4px solid #800080; /* фиолетовая рамка */
+    padding: 15px;
+    margin-top: 10px;
+  }
+  
+  /* Заголовок */
+  .title {
+    margin: 0 0 10px 0;
+  }
+  
+  /* Контейнер мероприятий */
+  .eventsContainer {
+    display: flex;
+    flex-wrap: wrap; /* перенос на следующую строку */
+    gap: 20px; /* расстояние между карточками */
+    max-width: 1000px;
+    align-items: flex-start; /* выравнивание по верхнему краю */
+  }
+  
+  /* Карточка одного мероприятия */
+  .eventCard {
+    background-color: #222222;
+    border-radius: 6px;
+    box-shadow: 0 0 10px rgba(128, 0, 128, 0.7); /* фиолетовая тень */
+    padding: 15px;
+    width: 280px;
+    display: flex;
+    flex-direction: column;
+    position: relative; /* для кнопки крестика */
+    color: white;
+  }
+  
+  /* Заголовок события — больше и жирнее */
+  .eventTitle {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  
+  /* Описание и дата */
+  .eventDescription {
+    flex-grow: 1; /* чтобы кнопки были снизу */
+    margin-bottom: 12px;
+  }
+  
+  .eventDate {
+    font-size: 0.9rem;
+    color: #ccc;
+    margin-bottom: 12px;
+  }
+  
+  /* Контейнер для кнопок */
+  .eventButtons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  /* Кнопка редактирования */
+  .editButton {
+    background-color: #79068d; /* фиолетовый */
+    border: none;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.2s ease;
+  }
+  
+  .editButton:hover {
+    background-color: #7400aad5;
+  }
+  
+  /* Кнопка удаления (крестик) в правом верхнем углу */
+  .deleteButton {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background-color: #8b0000; /* тёмно-красный */
+    color: white;
+    width: 8px;
+    height: 36px;
+    font-weight: 700;
+    line-height: 22px;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  
+  .deleteButton:hover {
+    background-color: #cc0000;
+  }
+
+  .modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.7); /* затемнённый фон */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .modalContent {
+    background-color: #1a1a1a;
+    border: 2px solid #800080;
+    padding: 20px;
+    border-radius: 8px;
+    width: 400px;
+    color: white;
+    box-shadow: 0 0 15px 5px rgba(128, 0, 128, 0.7);
+  }
+  
+  .modalContent h2 {
+    margin-top: 0;
+  }
+  
+  .modalContent label {
+    display: block;
+    margin-bottom: 12px;
+    font-weight: 600;
+  }
+  
+  .modalContent input[type='text'],
+  .modalContent input[type='date'],
+  .modalContent textarea {
+    width: 100%;
+    padding: 6px;
+    border-radius: 4px;
+    border: 1px solid #800080;
+    background-color: #222;
+    color: white;
+    box-sizing: border-box;
+    font-size: 1rem;
+    margin-top: 4px;
+  }
+  
+  .modalButtons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  
+  .saveButton {
+    background-color: #800080;
+    border: none;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  
+  .saveButton:hover {
+    background-color: #aa00aa;
+  }
+  
+  .cancelButton {
+    background-color: #444;
+    border: none;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.2s ease;
+  }
+  
+  .cancelButton:hover {
+    background-color: #666;
+  }
+  
+  .errorText {
+    color: #ff5555;
+    font-size: 0.9rem;
+    margin-top: 4px;
+  }

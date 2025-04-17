@@ -1,4 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from 'axios';
+import { getToken } from '../utils/localStorageUtils';
 
 const API_BASE_URL = 'http://localhost:3000';
 
@@ -32,5 +34,39 @@ export const searchEvents = async (query: string): Promise<any> => {
       } else {
         throw new Error('Неизвестная ошибка');
       }
+    }
+  };
+
+
+  export const api = {
+    getUserProfile: async (userId: number) => {
+      const token = getToken();
+      const response = await axios.get(`${API_BASE_URL}/users/${userId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      return response.data;
+    },
+  
+    createEvent: async (eventData: any) => {
+      const token = getToken();
+      const response = await axios.post(`${API_BASE_URL}/events`, eventData, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      return response.data;
+    },
+  
+    updateEvent: async (eventId: string, eventData: any) => {
+      const token = getToken();
+      const response = await axios.put(`${API_BASE_URL}/events/${eventId}`, eventData, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      return response.data;
+    },
+  
+    deleteEvent: async (eventId: string) => {
+      const token = getToken();
+      await axios.delete(`${API_BASE_URL}/events/${eventId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
     }
   };

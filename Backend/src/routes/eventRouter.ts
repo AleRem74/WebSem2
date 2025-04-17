@@ -218,6 +218,7 @@ router.post('/',verifyToken ,eventController.create);
  *         description: Ошибка сервера
  */
 router.put('/:id', verifyToken, wrapUserMiddleware(verifyEventOwnership), eventController.update);
+//router.put('/:id',eventController.update);
 
 /**
 * @swagger
