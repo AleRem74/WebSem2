@@ -3,6 +3,7 @@ import { Response, NextFunction, RequestHandler } from 'express';
 const router = express.Router();
 import eventController from '@controllers/EventController';
 import { verifyToken, verifyAdminToken, verifyEventOwnership, RequestWithUser } from '@config/passport';
+import EventParticipantController from '@controllers/EventParticipantController';
 
 
   const wrapUserMiddleware = (
@@ -64,6 +65,7 @@ import { verifyToken, verifyAdminToken, verifyEventOwnership, RequestWithUser } 
  */
 router.get('/', eventController.getEvents);
 
+router.get('/participant/:id', EventParticipantController.getParticipants)
 
 /**
  * @swagger
@@ -169,6 +171,8 @@ router.get('/search', eventController.search);
  *       bearerFormat: JWT
  */
 router.post('/',verifyToken ,eventController.create);
+
+router.post('/participant', EventParticipantController.addParticipant);
 
 /**
  * @swagger

@@ -1,4 +1,4 @@
-// store/authSlice.ts
+
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { registerUser as apiRegisterUser } from '../Api/regService'; // функция API регистрации
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import styles from '../Styles/ProfilePage.module.css';
 
@@ -27,9 +27,14 @@ const EventForm: React.FC<EventFormProps> = ({
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm<FormData>({
     defaultValues: initialData,
   });
+
+  useEffect(() => {
+    reset(initialData);
+  }, [initialData, reset]);
 
   const onSubmit: SubmitHandler<FormData> = (data) => {
     handleSave(data);

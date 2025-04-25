@@ -12,6 +12,7 @@ export const store = configureStore({
       reg: regReducer,
       user: userReducer,
       filters: filterReducer,
+      
     },
   });
 // типы для useSelector и useDispatch

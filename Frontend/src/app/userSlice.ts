@@ -1,7 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { getToken } from '../utils/localStorageUtils';
 
-interface User {
+export interface User {
   id: number;
   name: string;
   email: string;
@@ -32,7 +33,7 @@ export const fetchUserProfile = createAsyncThunk(
   'user/fetchUserProfile',
   async (userId: number, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem('token');
+      const token = getToken
       if (!token) {
         return rejectWithValue('Не авторизован');
       }

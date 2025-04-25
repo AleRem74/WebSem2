@@ -39,6 +39,12 @@ export const searchEvents = async (query: string): Promise<any> => {
 
 
   export const api = {
+
+    fetchEvents: async () => {
+      const response = await axios.get(`${API_BASE_URL}/events`);
+      return response.data;
+    },
+
     getUserProfile: async (userId: number) => {
       const token = getToken();
       const response = await axios.get(`${API_BASE_URL}/users/${userId}`, {

@@ -10,7 +10,6 @@ class Event extends Model {
   public date!: Date; 
   public createdby!: number; 
 
-  
 }
 
 Event.init({
